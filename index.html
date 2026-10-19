@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ssst… dorme</title>
+<meta name="description" content="Tocca per svegliarla">
+<meta property="og:title" content="Ssst… dorme">
+<meta property="og:description" content="Tocca per svegliarla">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ssst… dorme">
+<meta name="twitter:description" content="Tocca per svegliarla">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+<style>
+:root{--bg:#f3e6ea;--dot:#e6d3da;--shell:#e9a3b6;--shell-dk:#c97c92;--lcd:#cfc6cf;--lcd-on:#fbf8ef;--ink:#3b2a2f;--title:#d9203f;--hint:#7a5563;--shadow:#ffb3c6;--paper:#fff;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body.awake{--bg:#ffe3ea;--dot:#ffc4d3;--shell:#ff6f91;--shell-dk:#d9436d;--lcd:var(--lcd-on);--hint:#8a3a52}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1820;--dot:#2c2230;--shell:#9a5a6d;--shell-dk:#74404f;--lcd:#8e8692;--hint:#d9b6c3;--title:#ff5c7a;--shadow:#6b2a40}
+body.awake:not([data-theme="light"]){--bg:#2a1620;--dot:#3a1f2c;--shell:#d9436d;--shell-dk:#a02a4d;--lcd:var(--lcd-on);--hint:#ffb3c6}}
+:root[data-theme="dark"]{--bg:#1f1820;--dot:#2c2230;--shell:#9a5a6d;--shell-dk:#74404f;--lcd:#8e8692;--hint:#d9b6c3;--title:#ff5c7a;--shadow:#6b2a40}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;min-height:100dvh;background:var(--bg);background-image:radial-gradient(var(--dot) 2px,transparent 2px);background-size:24px 24px;
+font-family:"Press Start 2P",ui-monospace,Menlo,monospace;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px 16px;overflow-x:hidden;transition:background-color .8s}
+h1{margin:0;text-align:center;font-weight:400;font-size:clamp(28px,11vw,72px);line-height:1.2;color:var(--title);text-shadow:.07em .07em 0 var(--shadow);min-height:1.2em;opacity:0;transform:scale(.4)}
+.done h1{animation:pop .7s cubic-bezier(.3,1.6,.5,1) forwards}
+
+.bubble{position:relative;max-width:min(360px,92vw);min-height:calc(2.2em + 24px);display:flex;align-items:center;justify-content:center;text-align:center;
+background:var(--paper);color:#3b2a2f;border:4px solid #3b2a2f;padding:12px 14px;font-size:clamp(11px,3.6vw,15px);line-height:1.6;box-shadow:5px 5px 0 var(--shell-dk);visibility:hidden}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-14px;width:16px;height:12px;margin-left:-8px;background:#3b2a2f;clip-path:polygon(0 0,100% 0,50% 100%)}
+.bubble::before{content:"";position:absolute;left:50%;bottom:-7px;width:8px;height:6px;margin-left:-4px;background:var(--paper);clip-path:polygon(0 0,100% 0,50% 100%);z-index:1}
+.talking .bubble,.done .bubble{visibility:visible;animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+#say::after{content:"_";animation:blink .6s steps(1) infinite}
+.done #say::after{content:""}
+
+.device{--w:min(320px,86vw,calc((100vh - 260px)/1.25));--w:min(320px,86vw,calc((100dvh - 260px)/1.25));width:var(--w);
+padding:calc(var(--w)*.19) calc(var(--w)*.13) calc(var(--w)*.11);background:var(--shell);border-radius:50% 50% 46% 46%/42% 42% 58% 58%;
+box-shadow:inset -8px -10px 0 var(--shell-dk),0 12px 0 rgba(0,0,0,.12);transition:background-color .8s}
+.lcd{position:relative;width:100%;aspect-ratio:1/1;background:var(--lcd);border:5px solid var(--ink);border-radius:10px;overflow:hidden;transition:background-color .5s}
+#baby-btn{-webkit-appearance:none;appearance:none;position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;background:transparent;cursor:pointer}
+#baby-btn:focus-visible{outline:4px solid var(--title);outline-offset:-8px}
+svg{display:block;position:absolute;inset:0;width:100%;height:100%;shape-rendering:crispEdges}
+svg *{transform-box:fill-box;transform-origin:50% 100%}
+.btns{display:flex;justify-content:space-between;padding:0 12%;margin-top:9%}
+.btns i{width:15%;aspect-ratio:1/1;border-radius:50%;background:var(--lcd-on);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
+.hint{margin:0;font-size:11px;color:var(--hint);text-align:center;animation:blink 1.2s steps(1) infinite}
+.awake .hint{visibility:hidden}
+.done .hint{display:none}
+
+/* bebè */
+#awakeFace{display:none}
+.awake #awakeFace{display:inline}
+.awake #sleepFace,.awake #zzz{display:none}
+#body{animation:breathe 2.4s ease-in-out infinite}
+.awake #body{animation:jump .9s ease-out 1,hop .7s .9s steps(1) infinite}
+.z{opacity:0;animation:zfloat 2.4s linear infinite}
+.z:nth-child(2){animation-delay:.8s}
+.z:nth-child(3){animation-delay:1.6s}
+
+@media (max-width:759px){body{gap:14px;padding-top:16px;padding-bottom:16px}}
+
+.bit{position:fixed;pointer-events:none;margin:-6px 0 0 -6px;z-index:5}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes hop{50%{transform:translateY(-1px)}}
+@keyframes breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.025)}}
+@keyframes jump{0%{transform:translateY(0)}25%{transform:translateY(-6px)}45%{transform:translateY(0)}65%{transform:translateY(-3px)}80%,100%{transform:translateY(0)}}
+@keyframes zfloat{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}100%{opacity:0;transform:translate(3px,-7px)}}
+@keyframes blink{50%{opacity:0}}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){#body,.awake #body,.hint,.z{animation:none!important}.z{opacity:1}.bit{display:none}}
+</style>
+</head>
+<body>
+<div class="bubble" aria-live="polite"><span id="say"></span></div>
+<div class="device">
+  <div class="lcd">
+    <button id="baby-btn" aria-label="Tocca per svegliarla">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <g id="body">
+          <g id="babyBase"></g>
+          <g id="sleepFace"></g>
+          <g id="awakeFace"></g>
+        </g>
+        <g id="zzz"></g>
+      </svg>
+    </button>
+  </div>
+  <div class="btns"><i></i><i></i><i></i></div>
+</div>
+<p class="hint">SSST… TOCCA PER SVEGLIARLA</p>
+<h1 id="title" aria-live="polite"></h1>
+
+<script>
+const K="#3b2a2f",S="#ffd9b8",RED="#e0202f",PK="#ff9db1",ON="#ffe1ea",W="#fff";
+const r=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+const $=id=>document.getElementById(id);
+
+// bebè (stessa del primo sito)
+const headRows=[[7,11,10],[8,9,14],[9,8,16],[10,7,18],[11,7,18],[12,7,18],[13,7,18],[14,7,18],[15,7,18],[16,7,18],[17,7,18],[18,8,16],[19,9,14],[20,11,10]];
+const skinRows=[[8,11,10],[9,9,14],[10,8,16],[11,8,16],[12,8,16],[13,8,16],[14,8,16],[15,8,16],[16,8,16],[17,8,16],[18,9,14],[19,10,12]];
+$("babyBase").innerHTML=
+  r(10,20,12,8,K)+r(11,21,10,6,ON)+
+  r(7,22,4,4,K)+r(8,23,2,2,S)+r(21,22,4,4,K)+r(22,23,2,2,S)+
+  r(10,28,5,2,K)+r(11,28,3,1,S)+r(17,28,5,2,K)+r(18,28,3,1,S)+
+  headRows.map(([y,x,w])=>r(x,y,w,1,K)).join("")+
+  skinRows.map(([y,x,w])=>r(x,y,w,1,S)).join("")+
+  r(9,16,3,2,PK)+r(20,16,3,2,PK)+
+  r(9,3,6,5,K)+r(10,4,4,3,RED)+r(17,3,6,5,K)+r(18,4,4,3,RED)+r(14,4,4,4,K)+r(15,5,2,2,"#a3121e")+
+  r(11,4,1,1,"#ff6b76")+r(19,4,1,1,"#ff6b76");
+// occhi chiusi + boccuccia
+$("sleepFace").innerHTML=r(10,14,1,1,K)+r(11,15,2,1,K)+r(13,14,1,1,K)+r(18,14,1,1,K)+r(19,15,2,1,K)+r(21,14,1,1,K)+r(15,17,2,1,K);
+// occhi aperti + sorriso
+$("awakeFace").innerHTML=r(11,13,2,3,K)+r(19,13,2,3,K)+r(11,13,1,1,W)+r(19,13,1,1,W)+r(14,16,1,1,K)+r(17,16,1,1,K)+r(15,17,2,1,K);
+// Zzz
+const Z=(x,y)=>`<g class="z">${r(x,y,3,1,K)+r(x+1,y+1,1,1,K)+r(x,y+2,3,1,K)}</g>`;
+$("zzz").innerHTML=Z(24,9)+Z(26,6)+Z(28,3);
+
+// audio chiptune (Web Audio, nessun file esterno)
+let ac,master,bus,loopTimer,nextT=0;
+const VOL=.12,hz=n=>440*Math.pow(2,(n-69)/12);
+function audio(){
+  if(!ac){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
+    ac=new C();master=ac.createGain();master.gain.value=VOL;master.connect(ac.destination);}
+  if(ac.state==="suspended")ac.resume();
+  return ac;
+}
+function note(n,t,d,type="square",v=1,out){
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.type=type;o.frequency.setValueAtTime(hz(n),t);
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d*.95);
+  o.connect(g);g.connect(out||master);o.start(t);o.stop(t+d);
+}
+function sfxWake(){const t=ac.currentTime;[67,72,76,84].forEach((n,i)=>note(n,t+i*.07,.09,"square",.6));}
+function blip(){if(ac)note(78+Math.floor(Math.random()*8),ac.currentTime,.05,"square",.35);}
+function fanfare(t){[72,76,79,84].forEach((n,i)=>note(n,t+i*.09,.12,"square",.8));note(88,t+.36,.5,"square",.8);note(48,t+.36,.5,"triangle",1);}
+const E=60/140/2;
+const MEL=[72,0,76,79,81,79,76,0,74,0,77,81,79,0,0,0, 72,0,76,79,84,81,79,76,77,76,74,71,72,0,0,0];
+const BASS=[48,48,50,55,48,53,55,48];
+function loop(){
+  const t0=nextT;
+  MEL.forEach((n,i)=>{if(n)note(n,t0+i*E,E*.9,"square",.55,bus);});
+  BASS.forEach((n,i)=>{note(n,t0+i*4*E,E*3.5,"triangle",.9,bus);note(n+12,t0+i*4*E+2*E,E*.6,"triangle",.4,bus);});
+  nextT+=MEL.length*E;
+  loopTimer=setTimeout(loop,Math.max(0,(nextT-ac.currentTime-.4)*1000));
+}
+function startMusic(){
+  if(!ac)return;
+  bus=ac.createGain();bus.connect(master);
+  const t=ac.currentTime+.05;fanfare(t);nextT=t+1.1;loop();
+}
+function stopMusic(){
+  clearTimeout(loopTimer);
+  if(bus){const b=bus;b.gain.setTargetAtTime(0,ac.currentTime,.03);setTimeout(()=>b.disconnect(),200);bus=null;}
+}
+
+// coriandoli
+const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function confetti(){
+  if(calm)return;
+  const cols=["#e0202f","#ff6f91","#ffb3c6","#fff4d6","#ff9db1","#ffd166"];
+  const W=innerWidth,H=innerHeight;
+  [0,1].forEach(side=>{                       // 0 = sinistra, 1 = destra
+    for(let i=0;i<45;i++){
+      const b=document.createElement("span");b.className="bit";
+      const sz=6+Math.random()*8,dir=side?-1:1;
+      b.style.cssText=`left:${side?W:0}px;top:${H*.72}px;width:${sz}px;height:${sz*(Math.random()<.5?1:.5)}px;background:${cols[i%cols.length]}`;
+      document.body.appendChild(b);
+      const vx=dir*(W*(.25+Math.random()*.45)),up=H*(.35+Math.random()*.4),rot=(Math.random()*2-1)*900;
+      const a=b.animate([
+        {transform:"translate(0,0) rotate(0)",opacity:1},
+        {transform:`translate(${vx*.6}px,${-up}px) rotate(${rot*.4}deg)`,opacity:1,offset:.3},
+        {transform:`translate(${vx}px,${H*.4}px) rotate(${rot}deg)`,opacity:.9}
+      ],{duration:2200+Math.random()*1600,delay:Math.random()*250,easing:"cubic-bezier(.2,.6,.4,1)",fill:"forwards"});
+      a.onfinish=()=>b.remove();
+    }
+  });
+}
+
+// interazione
+const root=document.body,btn=$("baby-btn"),say=$("say"),title=$("title");
+const NAME=atob("QU5JVEE=");
+const LINE="CIAO! MI CHIAMO "+NAME;
+let state="sleep",timers=[];
+const later=(fn,ms)=>timers.push(setTimeout(fn,ms));
+btn.addEventListener("click",()=>{
+  if(state==="busy")return;
+  if(state==="done"){
+    timers.forEach(clearTimeout);timers=[];stopMusic();
+    root.classList.remove("awake","talking","done");
+    say.textContent="";title.textContent="";
+    btn.setAttribute("aria-label","Tocca per svegliarla");
+    state="sleep";return;
+  }
+  state="busy";
+  if(audio())sfxWake();
+  root.classList.add("awake");
+  const start=calm?100:950,step=calm?0:85;
+  later(()=>{
+    root.classList.add("talking");
+    [...LINE].forEach((ch,i)=>later(()=>{say.textContent=LINE.slice(0,i+1);if(ch!==" ")blip();},i*step+200));
+    later(()=>{
+      title.textContent=NAME;
+      root.classList.remove("talking");root.classList.add("done");
+      confetti();startMusic();
+      btn.setAttribute("aria-label","Tocca per rimetterla a dormire");
+      state="done";
+    },LINE.length*step+600);
+  },start);
+});
+</script>
+</body>
+</html>
